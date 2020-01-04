@@ -66,10 +66,11 @@ class PrometheusDataWriter(clock: Clock, configuration: GatlingConfiguration) ex
   }
 
   override def onMessage(message: LoadEventMessage, data: PrometheusData): Unit = message match {
-    case user: UserMessage         => onUserMessage(user, data)
-    case response: ResponseMessage => onResponseMessage(response, data)
-    case error: ErrorMessage       => onErrorMessage(error, data)
-    case _                         =>
+    case userStart: UserStartMessage => onUserStartMessage(userStart, data)
+    case userEnd: UserEndMessage     => onUserEndMessage(userEnd, data)
+    case response: ResponseMessage   => onResponseMessage(response, data)
+    case error: ErrorMessage         => onErrorMessage(error, data)
+    case _                           =>
   }
 
   override def onFlush(data: PrometheusData): Unit = {}
@@ -84,15 +85,12 @@ class PrometheusDataWriter(clock: Clock, configuration: GatlingConfiguration) ex
       data.server.get.stop()
   }
 
-  private def onUserMessage(user: UserMessage, data: PrometheusData): Unit = {
-    import user._
+  private def onUserStartMessage(user: UserStartMessage, data: PrometheusData): Unit = {
+    data.startedUsers.labels(data.simulation).inc()
+  }
 
-    event match {
-      case Start =>
-        data.startedUsers.labels(data.simulation).inc()
-      case End =>
-        data.finishedUsers.labels(data.simulation).inc()
-    }
+  private def onUserEndMessage(user: UserEndMessage, data: PrometheusData): Unit = {
+    data.finishedUsers.labels(data.simulation).inc()
   }
 
   private def onResponseMessage(response: ResponseMessage, data: PrometheusData): Unit = {
