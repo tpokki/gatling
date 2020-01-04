@@ -14,7 +14,7 @@ ThisBuild / Keys.useCoursier := false
 lazy val root = Project("gatling-parent", file("."))
   .enablePlugins(AutomateHeaderPlugin, SonatypeReleasePlugin, SphinxPlugin)
   .dependsOn(Seq(commons, core, http, jms, mqtt, jdbc, redis).map(_ % "compile->compile;test->test"): _*)
-  .aggregate(nettyUtil, commons, core, jdbc, redis, httpClient, http, jms, mqtt, charts, graphite, app, recorder, testFramework, bundle, compiler)
+  .aggregate(nettyUtil, commons, core, jdbc, redis, httpClient, http, jms, mqtt, charts, graphite, prometheus, app, recorder, testFramework, bundle, compiler)
   .settings(basicSettings)
   .settings(skipPublishing)
   .settings(libraryDependencies ++= docDependencies)
@@ -75,6 +75,10 @@ lazy val graphite = gatlingModule("gatling-graphite")
   .dependsOn(core % "compile->compile;test->test")
   .settings(libraryDependencies ++= graphiteDependencies)
 
+lazy val prometheus = gatlingModule("gatling-prometheus")
+  .dependsOn(core % "compile->compile;test->test")
+  .settings(libraryDependencies ++= prometheusDependencies)
+
 lazy val compiler = gatlingModule("gatling-compiler")
   .settings(libraryDependencies ++= compilerDependencies(scalaVersion.value))
 
@@ -84,7 +88,7 @@ lazy val benchmarks = gatlingModule("gatling-benchmarks")
   .settings(libraryDependencies ++= benchmarkDependencies)
 
 lazy val app = gatlingModule("gatling-app")
-  .dependsOn(core, http, jms, jdbc, redis, graphite, charts)
+  .dependsOn(core, http, jms, jdbc, redis, graphite, charts, prometheus)
 
 lazy val recorder = gatlingModule("gatling-recorder")
   .dependsOn(core % "compile->compile;test->test", http)
