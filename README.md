@@ -1,5 +1,5 @@
 ***
-> This fork contains initial prometheus support from [bmaguireibm/gatling](https://github.com/bmaguireibm/gatling), ported to more recent 3.3.1 release. 
+> This fork contains prometheus support from [bmaguireibm/gatling](https://github.com/bmaguireibm/gatling), ported to more recent 3.3.1 release. 
 ***
 
 # Gatling [![Build Status](https://travis-ci.org/gatling/gatling.svg?branch=master)](https://travis-ci.org/gatling/gatling) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.gatling/gatling-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.gatling/gatling-core/)
