@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 GatlingCorp (https://gatling.io)
+ * Copyright 2011-2020 GatlingCorp (https://gatling.io)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -397,7 +397,7 @@ final case class DataConfiguration(
     leak: LeakDataWriterConfiguration,
     console: ConsoleDataWriterConfiguration,
     graphite: GraphiteDataWriterConfiguration,
-    prometheus:  PrometheusDataWriterConfiguration
+    prometheus: PrometheusDataWriterConfiguration
 ) {
 
   def fileDataWriterEnabled: Boolean = dataWriters.contains(FileDataWriterType)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2019 GatlingCorp (https://gatling.io)
+ * Copyright 2011-2020 GatlingCorp (https://gatling.io)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import io.gatling.core.stats.message.{ End, Start }
 import io.gatling.core.stats.writer._
 
 case class PrometheusData(
-    startedUsers:       Counter,
-    finishedUsers:      Counter,
+    startedUsers: Counter,
+    finishedUsers: Counter,
     requestLatencyHist: Histogram,
-    errorCounter:       Counter,
-    simulation:         String,
-    server:             Option[HTTPServer]
+    errorCounter: Counter,
+    simulation: String,
+    server: Option[HTTPServer]
 ) extends DataWriterData
 
 class PrometheusDataWriter(clock: Clock, configuration: GatlingConfiguration) extends DataWriter[PrometheusData] {
@@ -52,14 +52,26 @@ class PrometheusDataWriter(clock: Clock, configuration: GatlingConfiguration) ex
       }
     }
     PrometheusData(
-      startedUsers = Counter.build.name("total_started_users").labelNames("simulation")
-        .help("Total Gatling users Started").register,
-      finishedUsers = Counter.build.name("total_finished_users").labelNames("simulation")
-        .help("Total Gatling users Finished").register,
-      requestLatencyHist = Histogram.build.name("requests_latency_secondsHistogram")
-        .help("Request latency in seconds.").labelNames("simulation", "metric", "error", "responseCode", "oK").register,
-      errorCounter = Counter.build.name("error_msg_count")
-        .help("Keeps count of each error message").labelNames("simulation", "errorMsg").register,
+      startedUsers = Counter.build
+        .name("total_started_users")
+        .labelNames("simulation")
+        .help("Total Gatling users Started")
+        .register,
+      finishedUsers = Counter.build
+        .name("total_finished_users")
+        .labelNames("simulation")
+        .help("Total Gatling users Finished")
+        .register,
+      requestLatencyHist = Histogram.build
+        .name("requests_latency_secondsHistogram")
+        .help("Request latency in seconds.")
+        .labelNames("simulation", "metric", "error", "responseCode", "oK")
+        .register,
+      errorCounter = Counter.build
+        .name("error_msg_count")
+        .help("Keeps count of each error message")
+        .labelNames("simulation", "errorMsg")
+        .register,
       simulation = init.runMessage.simulationId,
       server = server
     )
@@ -94,14 +106,19 @@ class PrometheusDataWriter(clock: Clock, configuration: GatlingConfiguration) ex
   }
 
   private def onResponseMessage(response: ResponseMessage, data: PrometheusData): Unit = {
-    import response.{ endTimestamp, startTimestamp, name, message, responseCode, status }
+    import response.{ endTimestamp, message, name, responseCode, startTimestamp, status }
 
     logger.debug(s"Received Response message, ${name}")
 
-    data.requestLatencyHist.labels(
-      data.simulation, name, message.getOrElse(""), responseCode.getOrElse("0"), status.toString
-    )
-      .observe((endTimestamp - startTimestamp) / 1000D)
+    data.requestLatencyHist
+      .labels(
+        data.simulation,
+        name,
+        message.getOrElse(""),
+        responseCode.getOrElse("0"),
+        status.toString
+      )
+      .observe((endTimestamp - startTimestamp) / 1000d)
   }
 
   private def onErrorMessage(error: ErrorMessage, data: PrometheusData): Unit = {
